@@ -19,7 +19,7 @@ from decimal import Decimal, ROUND_DOWN
 import streamlit as st
 
 st.set_page_config(page_title="Prime agent: Chat with search", page_icon="P")
-st.title("Chat with agent")
+st.title("Chat with Prime agent 🎯")
 
 openai_api_key = st.secrets["OpenAI_key"]
 
@@ -111,7 +111,7 @@ def update_selection():
 def frg_option(key = "key_activity"):
     selected_option = st.selectbox(
         "Select an Exercise and chat with agent:", 
-        ['Select an option...','Cardio', 'Weight', 'Swimming'], 
+        ['Select an option...','Cardio', 'Weight training', 'Swimming'], 
         key="key_activity",
         on_change=update_selection    
         )   
@@ -214,6 +214,8 @@ def update_gl_text():
 
         if user_message:
             msgs.add_ai_message(user_message)
+            memory.chat_memory.add_ai_message("Regular mealtimes keep your blood sugar levels in range. Do you want help with making healthy food choices?")           
+
             # Sample input values
             inputs = {
                 "report_result": report_result,
@@ -255,7 +257,6 @@ def update_gl_text():
             #------------------------
             # memory.chat_memory.add_user_message(formatted_activity_prompt)
             memory.chat_memory.add_user_message(formatted_activity_prompt_gl_sn2)
-            memory.chat_memory.add_ai_message("Regular mealtimes keep your blood sugar levels in range. Do you want help with making healthy food choices?")           
             st.session_state.formatted_activity_prompt_gl_sn2 = formatted_activity_prompt_gl_sn2
         return
 
@@ -301,7 +302,7 @@ def update_ins_text():
     #------- glucose level above 70 normals ----
     new_glucose_level = st.session_state.key_ins
     if new_glucose_level:   
-        user_message = "Check for carbohydrate content :" + str(new_glucose_level) +"grams"   
+        user_message = "Check for carbohydrate content :" + str(new_glucose_level) +"grams ?"   
         if st.session_state.txt_ins is None:    
             st.session_state.txt_ins = user_message;  
                 # -- call corpus 
@@ -358,7 +359,7 @@ def frg_cgm_auto_update():
     # Simulating dynamic data updates
     placeholder = st.empty()
     for i in range(200):  # Simulate 5 new data points coming in
-        time.sleep(4)  # Simulating a time delay (can be removed for real-time updates)
+        time.sleep(1)  # Simulating a time delay (can be removed for real-time updates)
         
         # Generate new data point
         new_time = pd.Timestamp.now() + pd.Timedelta(minutes=duration_in_minutes * (cgm.num_points+i))
@@ -624,17 +625,19 @@ with st.sidebar:
     if st.button("Get Support \u2665"):
         pass
     #----------
-    st.write("Insulin dosage")
+    st.markdown("## Insulin dosage")
     frg_insulin()
     if st.button("Get insulin dose \u2665"):
         pass
+    st.markdown("## Activities")
     frg_option()
     if st.button("Ask Agent 🤖"):
         pass
     # frg_meal()
     # if st.button("Check plan 🗒️"):
         pass
-    if st.button("Monitor and Ask Agent"):
+    st.markdown("## Monitor")
+    if st.button("Monitor levels"):
         frg_cgm_auto_update()
         st.session_state.cgm_user_msg1 = None
     if st.button("Refresh"):
