@@ -237,7 +237,7 @@ def update_gl_text():
         #------- glucose level hypo ----
 
     if Decimal(new_glucose_level) <= 70 and Decimal(new_glucose_level) >= 55:  
-        user_message = "Check blood sugar level going below 70 at :" + str(new_glucose_level) + "mg/dL"
+        user_message = "Your blood sugar level is low " + str(new_glucose_level) + "mg/dL" + ". Have a sugary snack or drink 6 oz of fruit juice. Do you want other suggestions for fast acting carbohydrates?"
         if st.session_state.txt_gl is None:    
             st.session_state.txt_gl = user_message;  
         
@@ -255,6 +255,7 @@ def update_gl_text():
             #------------------------
             # memory.chat_memory.add_user_message(formatted_activity_prompt)
             memory.chat_memory.add_user_message(formatted_activity_prompt_gl_sn2)
+            memory.chat_memory.add_ai_message("Regular mealtimes keep your blood sugar levels in range. Do you want help with making healthy food choices?")           
             st.session_state.formatted_activity_prompt_gl_sn2 = formatted_activity_prompt_gl_sn2
         return
 
@@ -263,17 +264,17 @@ def update_gl_text():
          #------- glucose level hypo scenario 2 ----
 
     if Decimal(new_glucose_level) < 55:  
-        user_message = "Your blood sugar is danegerously low. The emergency Glucagon is located in the bag. Ask agent for instructions to administer Glucagon"
+        user_message = "Your blood sugar level is dangerously low. The emergency glucagon kit is located in my bag. Here are the instructions on how to administer glucagon."
         if st.session_state.txt_gl is None:    
             st.session_state.txt_gl = user_message;  
         
         if user_message:
-            msgs.add_user_message("Calls emergency services...")
+            msgs.add_user_message("Emergency alert")
             msgs.add_user_message(user_message)
             prompt_template_low_gly_sn1 = PromptTemplate(
                 input_variables=["low_gly_user_input_sn1"],
                 # template="Your blood sugar is danegerously low. Reach out for emergency glucogen kit {low_gly_user_input_sn1}"
-                template="Instructions on how to administer the glucogen for emergency levels {low_gly_user_input_sn1} ...."
+                template="Agent pulls up info on glucagon administration from peer reviewed source {low_gly_user_input_sn1} ?"
 
             )
             
@@ -292,7 +293,50 @@ def frg_cgm_text_update():
         
         sugar_ip = st.text_input("Enter blood sugar reading:", on_change=update_gl_text, key="key_gl")
         # new_glucose_level_rounded = decimal_gl_txt.quantize(Decimal('0.0'), rounding=ROUND_DOWN)
-        new_glucose_level = sugar_ip
+        
+
+def update_ins_text():
+    st.session_state.txt_ins = st.session_state.key_ins
+
+    #------- glucose level above 70 normals ----
+    new_glucose_level = st.session_state.key_ins
+    if new_glucose_level:   
+        user_message = "Check for carbohydrate content :" + str(new_glucose_level) +"grams"   
+        if st.session_state.txt_ins is None:    
+            st.session_state.txt_ins = user_message;  
+                # -- call corpus 
+        if user_message:
+            prompt_template = PromptTemplate(
+                input_variables=["activity"],
+                template="Could you provide guidance on calculating insulin dosage based on {activity} carbohydrate intake?"
+            )
+            # st.write(f"selected the key_activity: {st.session_state.key_activity}")
+            # ---- activity prompt ----/
+            formatted_s_prompt = prompt_template.format(activity=new_glucose_level)
+            #------------------------
+            # memory.chat_memory.add_user_message(formatted_activity_prompt)
+            memory.chat_memory.add_user_message(formatted_s_prompt)
+
+            msgs.add_user_message(user_message)
+            # Sample input values
+            inputs = {
+                "normal_gly": user_message
+            }
+            prompt_template_normal = PromptTemplate(
+                input_variables=["normal_gly"],
+                # template="Your blood sugar is danegerously low. Reach out for emergency glucogen kit {low_gly_user_input_sn1}"
+                template="Could you provide guidance on calculating insulin dosage based on {normal_gly} carbohydrate intake ?"
+
+            )
+            memory.chat_memory.add_user_message(prompt_template_normal)
+            st.session_state.formatted_activity_prompt_normal = prompt_template_normal
+
+@st.fragment()
+def frg_insulin():
+        
+    insulin = st.text_input("Carbohydrate content of meal in grams", on_change=update_ins_text, key="key_ins")
+    # new_glucose_level_rounded = decimal_gl_txt.quantize(Decimal('0.0'), rounding=ROUND_DOWN)
+    new_glucose_level = insulin
 
 @st.fragment()
 def frg_cgm_auto_update():
@@ -433,7 +477,7 @@ def frg_cgm_auto_update():
             y='Glucose Level (mg/dL):Q',
             tooltip=['Time:T', 'Glucose Level (mg/dL):Q']
         ).properties(
-            title='Continuous Glucose Monitoring (Dynamic Update)',
+            title='Continuous Glucose Monitoring',
             width=600,
             height=300
         )
@@ -580,11 +624,15 @@ with st.sidebar:
     if st.button("Get Support \u2665"):
         pass
     #----------
+    st.write("Insulin dosage")
+    frg_insulin()
+    if st.button("Get insulin dose \u2665"):
+        pass
     frg_option()
     if st.button("Ask Agent 🤖"):
         pass
-    frg_meal()
-    if st.button("Check plan ->"):
+    # frg_meal()
+    # if st.button("Check plan 🗒️"):
         pass
     if st.button("Monitor and Ask Agent"):
         frg_cgm_auto_update()
