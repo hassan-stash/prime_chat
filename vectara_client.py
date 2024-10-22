@@ -2,12 +2,12 @@ import requests
 import json
 import streamlit as st
 
-vectarakey = st.secrets["Vectara_api_key"]
+vectarakey = st.secrets["RAG_provider_api_key"]
 API_KEY = vectarakey
 CUSTOMER_ID = "3768347100"
 CORPUS_ID = "3"
 
-Vectarakey_diabetes_pan_api_key = st.secrets["Vectarakey_diabetes_pan_api_key"]
+RAG_document_diabetes_pan_api_key = st.secrets["RAG_document_diabetes_pan_api_key"]
 corpus_id_diabetes_plan = 5
 
 def query_vectara_diabetes_plan(query_text):
@@ -15,7 +15,7 @@ def query_vectara_diabetes_plan(query_text):
     headers = {
         "Content-Type": "application/json",
         "customer-id": CUSTOMER_ID,
-        "x-api-key": Vectarakey_diabetes_pan_api_key
+        "x-api-key": RAG_document_diabetes_pan_api_key
     }
     data = {
         "query": [
