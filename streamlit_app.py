@@ -21,9 +21,9 @@ import streamlit as st
 st.set_page_config(page_title="Prime agent: Chat with search", page_icon="P")
 st.title("Chat with Prime agent 🎯")
 
-openai_api_key = st.secrets["OpenAI_key"]
+# openai_api_key = st.secrets["OpenAI_key"]
 
-# openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
+openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 
 msgs = StreamlitChatMessageHistory()
 memory = ConversationBufferMemory(
@@ -170,23 +170,6 @@ def frg_display_activity():
 
 # ---------------------- CGM widget -----------------------------------
 
-# def insert_cgm_message_agent(new_gl_level):
-#     st.write(f"Inside cgm message {new_gl_level}")
-#     user_message = "glucose level going below 70 at :" + str(new_gl_level)
-#     if user_message:
-#         msgs.add_ai_message(user_message)
-
-#         prompt_template_low_gly_sn2 = PromptTemplate(
-#         input_variables=["low_gly_user_input_sn2"],
-#         template="Want other suggestions for fast acting carbohydrates for {low_gly_user_input_sn2} "
-#         )
-#         st.write(f"Say yes to agent for help...")
-#         # ---- prompt_template_low_gly_sn2 prompt ----/
-#         formatted_activity_prompt_gl_sn2 = prompt_template_low_gly_sn2.format(low_gly_user_input_sn2= user_message)
-#         #------------------------
-#         # memory.chat_memory.add_user_message(formatted_activity_prompt)
-#         memory.chat_memory.add_user_message(formatted_activity_prompt_gl_sn2)
-#         st.session_state.formatted_activity_prompt_gl_sn2 = formatted_activity_prompt_gl_sn2
 
 def update_gl_text():
     st.session_state.txt_gl = st.session_state.key_gl
@@ -346,14 +329,6 @@ def frg_cgm_auto_update():
     cgm = CGM(start_time = pd.Timestamp.now(), num_points=1, duration_in_minutes=duration_in_minutes)
     cg_data = cgm.cg_data
 
-
-    # if "glucose_chart_session" in st.session_state:
-    #     glucose_chart = st.session_state.glucose_chart_session
-    # else:
-    #     glucose_chart = cgm.initiate_cgm_chart()
-    #     st.session_state.glucose_chart_session = glucose_chart
-    
-    # -- uncomment
     glucose_chart = cgm.initiate_cgm_chart()
 
     # Simulating dynamic data updates
@@ -364,110 +339,6 @@ def frg_cgm_auto_update():
         # Generate new data point
         new_time = pd.Timestamp.now() + pd.Timedelta(minutes=duration_in_minutes * (cgm.num_points+i))
         new_glucose_level = np.random.normal(loc=70, scale=30)
-
-
-        # #------- glucose level above 70 normals ----
-
-        # if new_glucose_level > 69:              
-        #     user_message = "glucose level at :" + str(new_glucose_level) + "mg/dL"
-        #     report_result = "Is this a normal range?"
-        #     if st.session_state.cgm_user_normal_msg is None:    
-        #         st.session_state.cgm_user_normal_msg  = user_message;  
-        #          # -- call corpus 
-        #         result = vectara.query_vectara("What it says about normal glucose level?")
-        #         responses = result.get('responseSet', [])
-        #         if responses:
-        #             for i, response in enumerate(responses[0].get('response', []), 1):
-        #                 print(f"\n{i}. {response.get('text')}")
-        #                 report_result = response.get('text')
-        #                 st.write(report_result)
-        #                 break
-        #         else:
-        #             print("No results found.")
-        #         st.write(user_message)
-            
-
-        #     if user_message:
-        #         msgs.add_ai_message(user_message)
-        #         # Sample input values
-        #         inputs = {
-        #             "report_result": report_result,
-        #             "normal_gly": user_message
-        #         }
-        #         prompt_template_normal = PromptTemplate(
-        #             input_variables=["report_result", "normal_gly"],
-        #             # template="Your blood sugar is danegerously low. Reach out for emergency glucogen kit {low_gly_user_input_sn1}"
-        #             template="Given my report: ""{report_result}"" do you want to check impact on my levels at {normal_gly} ?"
-
-        #         )
-                
-        #         # ---- prompt_template_low_gly_sn1 prompt ----/
-        #         formatted_activity_prompt_normal = prompt_template_normal.format(**inputs)
-        #         #------------------------
-        #         # memory.chat_memory.add_user_message(formatted_activity_prompt)
-        #         memory.chat_memory.add_user_message(formatted_activity_prompt_normal)
-        #         st.session_state.formatted_activity_prompt_normal = formatted_activity_prompt_normal
-
-
-        # #------- glucose level hypo ----
-
-        # if new_glucose_level <= 70:  
-        #     user_message = "glucose level going below 70 at :" + str(new_glucose_level) + "mg/dL"
-        #     if st.session_state.cgm_user_msg is None:    
-        #         st.session_state.cgm_user_msg = user_message;  
-        #         st.write(f"glucose going below 70")
-        #         st.write(f"Say yes to agent for help...")
-        #     # if st.session_state.low_glucose_level is None:
-        #     #     st.session_state.low_glucose_level = new_glucose_level
-        #     #     # Button to insert message
-        #     #     if st.button("Take action", key="key_btn_low_gl", on_click=insert_cgm_message_agent, args=(new_glucose_level,)):
-        #     #         pass
-            
-        #     # st.write(f"Inside cgm message {new_glucose_level}")
-            
-        #     if user_message:
-        #         msgs.add_ai_message(user_message)
-        #         prompt_template_low_gly_sn2 = PromptTemplate(
-        #             input_variables=["low_gly_user_input_sn2"],
-        #             template="Want other suggestions for fast acting carbohydrates for {low_gly_user_input_sn2} "
-        #         )
-                
-        #         # ---- prompt_template_low_gly_sn2 prompt ----/
-        #         formatted_activity_prompt_gl_sn2 = prompt_template_low_gly_sn2.format(low_gly_user_input_sn2 = user_message)
-        #         #------------------------
-        #         # memory.chat_memory.add_user_message(formatted_activity_prompt)
-        #         memory.chat_memory.add_user_message(formatted_activity_prompt_gl_sn2)
-        #         st.session_state.formatted_activity_prompt_gl_sn2 = formatted_activity_prompt_gl_sn2
-
-        # #-------------------------------
-
-        #  #------- glucose level hypo scenario 2 ----
-
-        # if new_glucose_level <= 55:  
-        #     user_message = "EMERGENCY"
-        #     if st.session_state.cgm_user_msg1 is None:    
-        #         st.session_state.cgm_user_msg1 = user_message;  
-        #         st.write(f"Your blood sugar is danegerously low. Reach out for emergency glucogen kit. Call 911.")
-        #         frg_emergency()
-            
-        #     if user_message:
-        #         msgs.add_ai_message(user_message)
-        #         prompt_template_low_gly_sn1 = PromptTemplate(
-        #             input_variables=["low_gly_user_input_sn1"],
-        #             # template="Your blood sugar is danegerously low. Reach out for emergency glucogen kit {low_gly_user_input_sn1}"
-        #             template="Instructions on how to administer the glucogen during {low_gly_user_input_sn1} ?"
-
-        #         )
-                
-        #         # ---- prompt_template_low_gly_sn1 prompt ----/
-        #         formatted_activity_prompt_gl_sn1 = prompt_template_low_gly_sn1.format(low_gly_user_input_sn1 = user_message)
-        #         #------------------------
-        #         # memory.chat_memory.add_user_message(formatted_activity_prompt)
-        #         memory.chat_memory.add_user_message(formatted_activity_prompt_gl_sn1)
-        #         st.session_state.formatted_activity_prompt_gl_sn1 = formatted_activity_prompt_gl_sn1
-
-        # #-------------------------------
-
 
         # Add the new data
         cg_data = cgm.add_new_data(cg_data, new_time, new_glucose_level)
@@ -523,13 +394,6 @@ def frg_emergency(key="key_emergency"):
     animation.empty()
     elapsed_time = time.time() - st.session_state.start_time
     st.write(f"Total time: {elapsed_time:.1f} seconds")
-    # if st.button("Reset", key=f"{key}_reset"):
-    #     for key in ['emergency_step', 'start_time']:
-    #         if key in st.session_state:
-    #             del st.session_state[key]
-    #     st.rerun()
-
-# Usage in Streamlit app
 
 avatars = {"human": "user", "ai": "assistant"}
 for idx, msg in enumerate(msgs.messages):
@@ -553,45 +417,6 @@ def validate_input(user_input):
     else:
         # memory.chat_memory.add_user_message("Checking the user activity")
         return None
-
-# if prompt := st.chat_input(placeholder= st.session_state.formatted_activity_prompt):
-#     # # --validate activity ----
-#     # validation_error = validate_input(prompt)
-#     # if validation_error:
-#     #     st.error(validation_error)
-#     #     st.stop()
-#     # else:
-#     #     None
-
-#     st.chat_message("user").write(st.session_state.formatted_activity_prompt)
-#     if not openai_api_key:
-#         st.info("Please add your OpenAI API key to continue.")
-#         st.stop()
-
-# #------- llm init end -----------/
-#     # llm = ChatOpenAI(model_name="gpt-4o-mini", openai_api_key=openai_api_key, streaming=True)
-
-#     chatagent = ChatAgent(llm_api_key=openai_api_key, model_name="gpt-4o-mini")
-#     chatagent.initialize_chat()
-#     llm = chatagent.get_agent()
-
-# #------- llm init end -----------/
-#     tools = [DuckDuckGoSearchRun(name="Search")]
-#     chat_agent = ConversationalChatAgent.from_llm_and_tools(llm=llm, tools=tools)
-#     executor = AgentExecutor.from_agent_and_tools(
-#         agent=chat_agent,
-#         tools=tools,
-#         memory=memory,
-#         return_intermediate_steps=True,
-#         handle_parsing_errors=False,
-#     )
-#     with st.chat_message("assistant"):
-#         st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
-#         cfg = RunnableConfig()
-#         cfg["callbacks"] = [st_cb]
-#         response = executor.invoke(prompt, cfg)
-#         st.write(response["output"])
-#         st.session_state.steps[str(len(msgs.messages) - 1)] = response["intermediate_steps"]
 
 if prompt := st.chat_input(placeholder="Checking..."):
     st.chat_message("user").write(prompt)
