@@ -4,7 +4,7 @@ import streamlit as st
 
 vectarakey = st.secrets["RAG_provider_api_key"]
 API_KEY = vectarakey
-CUSTOMER_ID = "3768347100"
+CUSTOMER_ID = st.secrets["TEMP_CUST_ID"]
 CORPUS_ID = "3"
 
 RAG_document_diabetes_pan_api_key = st.secrets["RAG_document_diabetes_pan_api_key"]
